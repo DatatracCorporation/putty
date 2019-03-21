@@ -1,0 +1,20 @@
+#! /bin/bash
+
+script_dir="$(dirname "$(readlink -m "$0")")"
+
+root=${script_dir}/../../
+
+docker run \
+        --user $(id -u):$(id -g) \
+        --rm \
+        --interactive \
+        --sig-proxy=true \
+        --volume=${root}:/code \
+        --workdir=/code \
+        putty \
+        bash << EOT
+perl mkfiles.pl
+
+cd windows
+mingw32-make -f Makefile.mgw clean
+EOT

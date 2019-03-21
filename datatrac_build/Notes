@@ -1,0 +1,7 @@
+Build the makefiles with:
+
+
+
+Build putty with:
+
+COMPAT=-DNO_MULTIMON mingw32-make -f Makefile.mgw
