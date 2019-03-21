@@ -1,0 +1,5 @@
+#! /bin/bash
+
+script_dir="$(dirname "$(readlink -m "$0")")"
+
+docker build --tag putty - < ${script_dir}/../Dockerfile
