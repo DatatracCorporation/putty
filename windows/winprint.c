@@ -5,6 +5,8 @@
 #include "putty.h"
 #include <winspool.h>
 
+#define PRINTER_DEFAULT_TOKEN "(default printer)"
+
 struct printer_enum_tag {
     int nprinters;
     DWORD enum_level;
@@ -20,6 +22,8 @@ struct printer_job_tag {
 
 DECL_WINDOWS_FUNCTION(static, BOOL, EnumPrinters,
                       (DWORD, LPTSTR, DWORD, LPBYTE, DWORD, LPDWORD, LPDWORD));
+DECL_WINDOWS_FUNCTION(static, BOOL, GetDefaultPrinter,
+                      (LPTSTR, LPDWORD));
 DECL_WINDOWS_FUNCTION(static, BOOL, OpenPrinter,
                       (LPTSTR, LPHANDLE, LPPRINTER_DEFAULTS));
 DECL_WINDOWS_FUNCTION(static, BOOL, ClosePrinter, (HANDLE));
@@ -45,6 +49,7 @@ static void init_winfuncs(void)
          * later loads it unsafely. */
         (void) load_system32_dll("spoolss.dll");
         GET_WINDOWS_FUNCTION_PP(winspool_module, EnumPrinters);
+        GET_WINDOWS_FUNCTION_PP(winspool_module, GetDefaultPrinter);
         GET_WINDOWS_FUNCTION_PP(winspool_module, OpenPrinter);
         GET_WINDOWS_FUNCTION_PP(winspool_module, ClosePrinter);
         GET_WINDOWS_FUNCTION_PP(winspool_module, StartDocPrinter);
@@ -92,7 +97,7 @@ printer_enum *printer_start_enum(int *nprinters_ptr)
     printer_enum *ret = snew(printer_enum);
     char *buffer = NULL;
 
-    *nprinters_ptr = 0;		       /* default return value */
+    *nprinters_ptr = 1;		       /* default return value, 1 for default */
     buffer = snewn(512, char);
 
     /*
@@ -140,6 +145,10 @@ char *printer_get_name(printer_enum *pe, int i)
 	return NULL;
     if (i < 0 || i >= pe->nprinters)
 	return NULL;
+    if (i == 0)
+        return PRINTER_DEFAULT_TOKEN;
+    else
+        i -= 1;                        /* handle the fake default printer */
     switch (pe->enum_level) {
       case 4:
 	return pe->info.i4[i].pPrinterName;
@@ -170,12 +179,29 @@ printer_job *printer_start_job(char *printer)
     printer_job *ret = snew(printer_job);
     DOC_INFO_1 docinfo;
     bool jobstarted = false, pagestarted = false;
+    char *defprinter = NULL;
 
     init_winfuncs();
+
+    /* lookup the default printer if needed */
+    if (!strcmp(printer, PRINTER_DEFAULT_TOKEN)) {
+        /* get the length of the name */
+        DWORD buflen = 0;
+        p_GetDefaultPrinter(NULL, &buflen);
+        defprinter = snewn(buflen, char);
+
+        if (!p_GetDefaultPrinter(defprinter, &buflen))
+            goto error;
+
+        printer = defprinter;
+    }
 
     ret->hprinter = NULL;
     if (!p_OpenPrinter(printer, &ret->hprinter, NULL))
 	goto error;
+
+    sfree(defprinter);
+    defprinter = NULL;
 
     docinfo.pDocName = "PuTTY remote printer output";
     docinfo.pOutputFile = NULL;
@@ -199,6 +225,7 @@ printer_job *printer_start_job(char *printer)
     if (ret->hprinter)
 	p_ClosePrinter(ret->hprinter);
     sfree(ret);
+    sfree(defprinter);
     return NULL;
 }
 
