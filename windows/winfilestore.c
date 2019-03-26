@@ -93,7 +93,7 @@ static void decode_session_filename(const char *in, strbuf *out)
 
 	    put_byte(out, (i << 4) + j);
 	    in += 3;
-        } else if (*in == '.' && in[1] == 'a' && in[2] == 't' && in[4] == '\0') {
+        } else if (*in == '.' && in[1] == 'a' && in[2] == 't' && in[3] == '\0') {
             /* skip extension */
             in += 3;
 	} else {
