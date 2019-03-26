@@ -16,5 +16,5 @@ docker run \
 perl mkfiles.pl
 
 cd windows
-mingw32-make -f Makefile.mgw putty.exe
+mingw32-make -f Makefile.mgw putty.exe $@
 EOT
