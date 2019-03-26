@@ -1,3 +1,29 @@
+This is the README for the Datatrac Modified version of PuTTY used
+by our customers to connect to our COPS/STATIS/Trip Tracer screen
+based systems.
+
+It is a standard PuTTY build with two changes:
+
+ - There is support for configuring the printer to be the Windows
+   default printer.
+ - The profiles are written to/read from files in the Public Documents
+   folder.
+
+To build a new version:
+
+ - Build a docker container with the needed devtools using the
+   build_container script in datatrac_build/bin
+ - Assign a version number using the standard release.pl script:
+   ./release.pl --setver --version=0.71.dc.1
+ - Tag the code:
+   git tag -m "Tag release 0.71.dc.1" 0.71.dc.1 HEAD
+ - Edit the version.h to set the versions
+ - Build the code using the dist script in datatrac_build/bin
+ - Copy the windows/putty.exe to repo:5001/datatrac_connect
+   putting the version at the end of the filename
+
+--------------------------------------------------------------------
+
 This is the README for the source archive of PuTTY, a free Windows
 and Unix Telnet and SSH client.
 
