@@ -2,12 +2,14 @@ This is the README for the Datatrac Modified version of PuTTY used
 by our customers to connect to our COPS/STATIS/Trip Tracer screen
 based systems.
 
-It is a standard PuTTY build with two changes:
+It is a standard PuTTY build with three changes:
 
  - There is support for configuring the printer to be the Windows
    default printer.
  - The profiles are written to/read from files in the Public Documents
    folder.
+ - The app icon has been switch from the normal putty to a Datatrac one
+   to distinguish normal putty from this one.
 
 To build a new version:
 
