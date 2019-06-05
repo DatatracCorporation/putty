@@ -462,44 +462,44 @@ int verify_host_key(const char *hostname, int port, const char *keytype, const c
 
     ret = 1;
     while ( (line = fgetline(fp)) ) {
-    int i;
-    char *p = line;
-    char porttext[20];
+        int i;
+        char *p = line;
+        char porttext[20];
 
-    line[strcspn(line, "\n")] = '\0';   /* strip trailing newline */
+        line[strcspn(line, "\n")] = '\0';   /* strip trailing newline */
 
-    i = strlen(keytype);
-    if (strncmp(p, keytype, i)) goto done;
-    p += i;
+        i = strlen(keytype);
+        if (strncmp(p, keytype, i)) goto done;
+        p += i;
 
-    if (*p != '@') goto done;
-    p++;
+        if (*p != '@') goto done;
+        p++;
 
-    sprintf(porttext, "%d", port);
-    i = strlen(porttext);
-    if (strncmp(p, porttext, i)) goto done;
-    p += i;
+        sprintf(porttext, "%d", port);
+        i = strlen(porttext);
+        if (strncmp(p, porttext, i)) goto done;
+        p += i;
 
-    if (*p != ':') goto done;
-    p++;
+        if (*p != ':') goto done;
+        p++;
 
-    i = strlen(hostname);
-    if (strncmp(p, hostname, i)) goto done;
-    p += i;
+        i = strlen(hostname);
+        if (strncmp(p, hostname, i)) goto done;
+        p += i;
 
-    if (*p != ' ') goto done;
-    p++;
+        if (*p != ' ') goto done;
+        p++;
 
-    /*
-     * Found the key. Now just work out whether it's the right
-     * one or not.
-     */
-    if (!strcmp(p, key)) ret = 0;               /* key matched OK */
-    else ret = 2;               /* key mismatch */
+        /*
+         * Found the key. Now just work out whether it's the right
+         * one or not.
+         */
+        if (!strcmp(p, key)) ret = 0;               /* key matched OK */
+        else ret = 2;               /* key mismatch */
 
-    done:
-    sfree(line);
-    if (ret != 1) break;
+        done:
+        sfree(line);
+        if (ret != 1) break;
     }
 
     fclose(fp);
@@ -532,7 +532,6 @@ void store_host_key(const char *hostname, int port,
      */
     tmpfilename = make_filename(INDEX_HOSTKEYS_TMP, NULL);
     wfp = fopen(tmpfilename, "w");
-    sfree(tmpfilename);
     if (!wfp) {
         char *dir;
 
@@ -546,7 +545,6 @@ void store_host_key(const char *hostname, int port,
 
     filename = make_filename(INDEX_HOSTKEYS, NULL);
     rfp = fopen(filename, "r");
-    sfree(filename);
 
     /*
      * Copy all lines from the old file to the new one that _don't_
@@ -571,6 +569,8 @@ void store_host_key(const char *hostname, int port,
 
     rename(tmpfilename, filename);
 
+    sfree(tmpfilename);
+    sfree(filename);
     sfree(newtext);
 }
 
