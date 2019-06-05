@@ -19,10 +19,39 @@ To build a new version:
    ./release.pl --setver --version=0.71.dc.1
  - Tag the code:
    git tag -m "Tag release 0.71.dc.1" 0.71.dc.1 HEAD
- - Edit the version.h to set the versions
+ - push the tagged version:
+   git push
+ - Edit the version.h to set the versions like:
+        diff --git a/version.h b/version.h
+        index 74be18f4..560f3ecd 100644
+        --- a/version.h
+        +++ b/version.h
+        @@ -8,9 +8,9 @@
+          * default stuff used for local development runs of 'make'.
+          */
+
+        -#define TEXTVER "Unidentified build"
+        -#define SSHVER "-Unidentified-Local-Build"
+        -#define BINARY_VERSION 0,0,0,0
+        +#define TEXTVER "Release 0.71.dc.3"
+        +#define SSHVER "-Release-0.71.dc.3"
+        +#define BINARY_VERSION 0,71,9,3
+
+         #ifndef SOURCE_COMMIT
+         /*
+        @@ -31,5 +31,5 @@
+          * where you might go straight from local 'make' to 'make install'
+          * without going through Buildscr.
+          */
+        -#define SOURCE_COMMIT "unavailable"
+        +#define SOURCE_COMMIT "e29a8b90bbb85d985e3cd6073bc38ac56f791f51"
+         #endif
+
  - Build the code using the dist script in datatrac_build/bin
  - Copy the windows/putty.exe to repo:5001/datatrac_connect
    putting the version at the end of the filename
+ - reset version.h
+   git co -- version.h
 
 --------------------------------------------------------------------
 
